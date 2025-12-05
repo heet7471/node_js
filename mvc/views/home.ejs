@@ -1,0 +1,146 @@
+<!-- views/home.ejs -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Home — Login / Signup</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --muted: #666;
+    }
+    html,body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:var(--bg); color:#111; }
+    .wrap { min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card {
+      width:100%; max-width:920px; background:var(--card); border-radius:12px; box-shadow:0 8px 30px rgba(16,24,40,0.08);
+      display:grid; grid-template-columns: 1fr 420px; overflow:hidden;
+    }
+
+    /* left panel - info */
+    .info {
+      padding:36px; background: linear-gradient(180deg, rgba(37,99,235,0.06), rgba(37,99,235,0.03));
+      display:flex; flex-direction:column; gap:12px; justify-content:center;
+    }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo { width:46px; height:46px; border-radius:10px; background:var(--accent); display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:18px; }
+    h1 { margin:8px 0 4px; font-size:20px; }
+    p.lead { margin:0; color:var(--muted); max-width:36ch; }
+
+    /* right panel - forms */
+    .forms { padding:28px; display:flex; flex-direction:column; gap:14px; }
+    .tabs { display:flex; gap:8px; }
+    .tab {
+      flex:1; text-align:center; padding:10px 12px; border-radius:8px; cursor:pointer;
+      background:transparent; border:1px solid transparent; color:var(--muted);
+    }
+    .tab.active { background:var(--accent); color:white; font-weight:600; }
+    form { display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    label { font-size:13px; color:var(--muted); }
+    input[type="text"], input[type="password"] {
+      padding:10px 12px; border-radius:8px; border:1px solid #e6e9ef; outline:none;
+      font-size:15px; width:100%;
+    }
+    button {
+      margin-top:6px; padding:10px 12px; border-radius:8px; border:0; background:var(--accent); color:white;
+      font-weight:600; cursor:pointer;
+    }
+    .small { font-size:13px; color:var(--muted); }
+    .message { padding:10px; border-radius:8px; font-size:14px; }
+    .error { background:#fff1f0; color:#9f1239; border:1px solid #fcd5d9; }
+    .success { background:#ecfdf5; color:#166534; border:1px solid #bbf7d0; }
+
+    @media (max-width:880px) {
+      .card { grid-template-columns: 1fr; }
+      .info { order:2; padding:20px; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="info">
+        <div class="brand">
+          <div class="logo">S</div>
+          <div>
+            <div style="font-weight:700">SimpleAuth</div>
+            <div style="font-size:13px;color:var(--muted)">Login & Signup demo</div>
+          </div>
+        </div>
+
+        <h1>Welcome back</h1>
+        <p class="lead">Sign in if you already have an account, or create a new one quickly — we only need a username and password.</p>
+
+        <div style="margin-top:18px;">
+          <div class="small"><strong>Tip:</strong> This page posts to <code>/login</code> and <code>/register</code>. Adjust routes in your server.</div>
+        </div>
+      </div>
+
+      <div class="forms">
+        <div class="tabs">
+          <div id="tab-login" class="tab active" onclick="show('login')">Login</div>
+          <div id="tab-signup" class="tab" onclick="show('signup')">Signup</div>
+        </div>
+
+        <!-- messages from server -->
+        <% if (typeof loginError !== 'undefined' && loginError) { %>
+          <div class="message error"><%= loginError %></div>
+        <% } %>
+
+        <% if (typeof signupError !== 'undefined' && signupError) { %>
+          <div class="message error"><%= signupError %></div>
+        <% } %>
+
+        <% if (typeof signupSuccess !== 'undefined' && signupSuccess) { %>
+          <div class="message success"><%= signupSuccess %></div>
+        <% } %>
+
+        <!-- LOGIN FORM -->
+        <div id="panel-login">
+          <form method="post" action="/login">
+            <label for="login-username">Username</label>
+            <input id="login-username" name="username" type="text" required autocomplete="username" placeholder="your username">
+
+            <label for="login-password">Password</label>
+            <input id="login-password" name="password" type="password" required autocomplete="current-password" placeholder="your password">
+
+            <button type="submit">Login</button>
+          </form>
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <div id="panel-signup" style="display:none;">
+          <form method="post" action="/register">
+            <label for="signup-username">Username</label>
+            <input id="signup-username" name="username" type="text" required autocomplete="username" placeholder="choose a username">
+
+            <label for="signup-password">Password</label>
+            <input id="signup-password" name="password" type="password" required autocomplete="new-password" placeholder="choose a password">
+
+            <button type="submit">Create account</button>
+          </form>
+        </div>
+
+        <div style="margin-top:6px;" class="small">
+          By continuing you agree to the simple demo terms.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between panels
+    function show(name) {
+      const isLogin = name === 'login';
+      document.getElementById('panel-login').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('panel-signup').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('tab-login').classList.toggle('active', isLogin);
+      document.getElementById('tab-signup').classList.toggle('active', !isLogin);
+    }
+
+  
+  </script>
+</body>
+</html>
